@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fivetran-wrapper-function
+  labels:
+    app: fivetran-wrapper-function
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fivetran-wrapper-function
+  template:
+    metadata:
+      labels:
+        app: fivetran-wrapper-function
+    spec:
+      containers:
+      - name: fivetran-wrapper-function
+        image: yourdockerhubusername/fivetran-wrapper:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: AzureWebJobsStorage
+          value: "<your-storage-connection-string>"
+        - name: FUNCTIONS_WORKER_RUNTIME
+          value: "python"
+        - name: APPINSIGHTS_INSTRUMENTATIONKEY
+          value: "<your-appinsights-key>"
+        - name: FIVETRAN_API_KEY
+          value: "<your-fivetran-api-key>"
+        - name: FIVETRAN_API_SECRET
+          value: "<your-fivetran-api-secret>"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fivetran-wrapper-service
+spec:
+  selector:
+    app: fivetran-wrapper-function
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
