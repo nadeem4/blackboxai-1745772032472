@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "<Your_Instrumentation_Key>",
+    "FIVETRAN_API_KEY": "<Your_FiveTran_API_Key>",
+    "FIVETRAN_API_SECRET": "<Your_FiveTran_API_Secret>"
+  }
+}
