@@ -1,0 +1,38 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'fivetran-wrapper'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+  displayName: 'Use Python 3.x'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  workingDirectory: 'fivetran-wrapper'
+  displayName: 'Install dependencies'
+
+- task: Docker@2
+  displayName: 'Build and push Docker image'
+  inputs:
+    containerRegistry: '$(dockerRegistryServiceConnection)'
+    repository: '$(imageName)'
+    command: 'buildAndPush'
+    Dockerfile: 'fivetran-wrapper/Dockerfile'
+    tags: |
+      latest
+
+- task: AzureFunctionAppContainer@1
+  displayName: 'Deploy Azure Function App'
+  inputs:
+    azureSubscription: '$(azureSubscription)'
+    appName: '$(azureFunctionAppName)'
+    imageName: '$(dockerRegistry)/$(imageName):latest'
+    resourceGroupName: '$(resourceGroupName)'
